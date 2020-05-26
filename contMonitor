@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#checks if it has permission to relaunch container if it has stoped
+stat=$(sudo cat status)
+echo $stat
+
+case $stat in
+           0)
+           echo "Acess denied"
+           exit 1;
+           ;;
+           
+           1)
+
+           #checks if container has exited/stopped
+           echo "Access granted"
+           if sudo docker ps --filter "status=exited" | grep convolution
+           then
+           echo "Container fialed"
+           sudo curl -u admin:yobah11111 http://192.168.172.3:8080/job/contLauncher/build?token=decisionMaker
+           echo "Launching new container"
+           exit 0
+           fi
+
+           if sudo docker ps --filter "status=exited" | grep neuralnet
+           then
+           echo "Container fialed"
+           sudo curl -u admin:yobah11111 http://192.168.172.3:8080/job/contLauncher/build?token=decisionMaker
+           echo "Launching new container"
+           exit 0
+           fi
+           ;;
+        *)
+    esac
+
+echo "Container still running"

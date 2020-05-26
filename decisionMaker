@@ -1,0 +1,17 @@
+#!/bin/bash
+acc=$(head -c 2 accuracy)
+echo $acc
+
+if ((acc > 80))
+then
+echo "Model crossed target accuracy"
+sudo python3 success_mail.py
+else
+echo "Accuracy failed"
+echo "Tuning paramenters"
+sudo python3 hyParaChanger.py 
+sudo sleep 5
+sudo python3 failure_mail.py
+sudo echo 1 > status
+sudo curl -u admin:yobah11111 http://192.168.172.3:8080/job/contLauncher/build?token=decisionMaker
+fi
