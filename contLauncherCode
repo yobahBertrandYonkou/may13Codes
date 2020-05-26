@@ -1,0 +1,65 @@
+#!/bin/bash
+#searches for keywords from code.py
+status=$(sudo grep "Convolution2D\|Pooling" code.py)
+status=$?
+
+#makes decision based on the search result
+# 0 means keywords were found (CNN)
+# 1 means keywords were note found (ANN)
+
+case $status in
+     0)
+     echo "Searching for container..."
+     if sudo docker ps --filter "status=exited" | grep convolution
+     then
+     echo "Container exited..."
+     echo "Clearing space..."
+     sudo docker container rm -f convolution
+     echo "Launching new container..."
+     sudo docker container run -dit -v /var/lib/jenkins/workspace/codePuller/:/root/ --name convolution tryam:latest
+     sudo python3 mail.py
+     echo "container online!!!"
+     exit 0
+     fi
+     
+     if docker ps | grep convolution
+     then
+     echo "Container still online"
+     else
+     echo "No container found..."
+     echo "Launching new container..."
+     sudo docker container run -dit -v /var/lib/jenkins/workspace/codePuller/:/root/ --name convolution tryam:latest
+     sudo python3 mail.py
+     echo "container online!!!"
+     fi
+     
+     ;;
+     
+     1)
+     echo "Searching for container..."
+     if sudo docker ps --filter "status=exited" | grep neuralnet
+     then
+     echo "Container exited..."
+     echo "Clearing space..."
+     sudo docker container rm -f neuralnet
+     echo "Launching new container..."
+     sudo docker container run -dit -v /var/lib/jenkins/workspace/codePuller/:/root/ --name neuralnet tryam:latest
+     echo "container online!!!"
+     sudo python3 mail.py
+     exit 0
+     fi
+     
+     if sudo docker ps | grep neuralnet
+     then
+     echo "Container still online"
+     else
+     echo "No container found..."
+     echo "Launching new container..."
+     sudo docker container run -dit -v /var/lib/jenkins/workspace/codePuller/:/root/ --name neuralnet tryam:latest
+     echo "container online!!!"
+     sudo python3 mail.py
+     fi
+          
+     ;;
+     *)
+ esac
