@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#checks of container has finished execution
+if sudo docker ps --filter "status=exited" | grep convolution
+then
+#gets the last line frome the logs of the container and stores in a file
+sudo docker logs --tail 1 convolution > getAccuracy
+#extracts the digits from the file and stores in another file
+sudo grep -om1 "[0-9]\+" getAccuracy > accuracy
+cat accuracy
+exit 0
+fi
+
+if sudo docker ps --filter "status=exited" | grep neuralnet
+then
+sudo docker logs --tail 1 neuralnet > getAccuracy
+sudo grep -om1 "[0-9]\+" getAccuracy > accuracy
+sudo cat accuracy
+
+else
+echo "Still running"
+exit 1
+fi
+
